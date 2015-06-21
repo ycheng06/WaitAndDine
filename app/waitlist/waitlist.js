@@ -11,14 +11,34 @@ angular.module('myApp.waitlist', ['ngRoute'])
 
 .controller('WaitlistController', ['$scope', '$firebaseArray', 
 	function($scope, $firebaseArray) {
-		var ref = new Firebase('https://scorching-inferno-9387.firebaseio.com/');
+		var partiesRef = new Firebase('https://scorching-inferno-9387.firebaseio.com/parties');
 
-		$scope.parties = $firebaseArray(ref.child("parties"));
+		// $scope.parties = $firebaseArray(ref.child("parties"));
+		$scope.parties = $firebaseArray(partiesRef);
 
-		$scope.party = {name: '', phone: '', size: ''};
+		$scope.newParty = {name: '', phone: '', size: ''};
 
+		// Function to save party to firebase
 		$scope.saveParty = function(){
-			$scope.parties.$add($scope.party);
-			$scope.party = {name: '', phone: '', size: ''};
+			$scope.parties.$add($scope.newParty);
+			$scope.newParty = {name: '', phone: '', size: ''};
+		};
+
+		// Function to remove party from firebase
+		$scope.removeParty = function(party){
+			$scope.parties.$remove(party);
+		};
+
+		// Function to send text message to customer
+		$scope.sendTextMessage = function(party){
+			var messageRef = new Firebase('https://scorching-inferno-9387.firebaseio.com/textMessages');
+
+			var textMessages = $firebaseArray(messageRef);
+			var newTextMessage = {
+				phoneNumber: party.phone,
+				size: party.size,
+				name: party.name
+			};
+			textMessages.$add(newTextMessage);
 		};
 }]);

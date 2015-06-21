@@ -1,6 +1,7 @@
 body {
   padding-top: 80px;
 }
+
 .starter-template {
   padding: 40px 15px;
   text-align: center;
@@ -8,4 +9,8 @@ body {
 
 .starter-template h1 {
   font-size: 63px;
+}
+
+#wait-table{
+	padding-top: 20px;
 }
