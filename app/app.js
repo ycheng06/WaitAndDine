@@ -5,6 +5,7 @@ angular.module('myApp', [
   'ngRoute',
   'myApp.landingPage',
   'myApp.waitlist',
+  'myApp.authenticate',
   'myApp.version',
   'firebase'
 ]).

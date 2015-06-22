@@ -30,7 +30,7 @@
   <![endif]-->
 
   <!-- Navigation bar that sticks to top -->
-  <nav class="navbar navbar-inverse navbar-fixed-top">
+  <nav ng-controller="AuthController" class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -43,7 +43,8 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#contact">Login</a></li>
+            <li><a href="#">Login</a></li>
+            <li><a ng-click="logout()" href="#">Logout</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -68,6 +69,7 @@
   <script src="app.js"></script>
   <script src="landing_page/landing_page.js"></script>
   <script src="waitlist/waitlist.js"></script>
+  <script src="authenticate/authenticate.js"></script>
 
   <script src="components/version/version.js"></script>
   <script src="components/version/version-directive.js"></script>

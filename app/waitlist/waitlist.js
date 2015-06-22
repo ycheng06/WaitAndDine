@@ -16,12 +16,12 @@ angular.module('myApp.waitlist', ['ngRoute'])
 		// $scope.parties = $firebaseArray(ref.child("parties"));
 		$scope.parties = $firebaseArray(partiesRef);
 
-		$scope.newParty = {name: '', phone: '', size: ''};
+		$scope.newParty = {name: '', phone: '', size: '', done: false, notified: "No"};
 
 		// Function to save party to firebase
 		$scope.saveParty = function(){
 			$scope.parties.$add($scope.newParty);
-			$scope.newParty = {name: '', phone: '', size: ''};
+			$scope.newParty = {name: '', phone: '', size: '', done: false, notified: "No"};
 		};
 
 		// Function to remove party from firebase
@@ -40,5 +40,8 @@ angular.module('myApp.waitlist', ['ngRoute'])
 				name: party.name
 			};
 			textMessages.$add(newTextMessage);
+
+			party.notified = "Yes";
+			$scope.parties.$save(party);
 		};
 }]);
