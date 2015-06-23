@@ -9,29 +9,24 @@ angular.module('myApp.waitlist', ['ngRoute'])
   });
 }])
 
-.controller('WaitlistController', ['$scope', '$firebaseArray', 
-	function($scope, $firebaseArray) {
-		var partiesRef = new Firebase('https://scorching-inferno-9387.firebaseio.com/parties');
-
-		// $scope.parties = $firebaseArray(ref.child("parties"));
-		$scope.parties = $firebaseArray(partiesRef);
-
+.controller('WaitlistController', ['$scope', 'partyService',
+	function($scope, partyService) {
+		$scope.parties = partyService.parties;
 		$scope.newParty = {name: '', phone: '', size: '', done: false, notified: "No"};
 
 		// Function to save party to firebase
 		$scope.saveParty = function(){
-			$scope.parties.$add($scope.newParty);
-			$scope.newParty = {name: '', phone: '', size: '', done: false, notified: "No"};
+			partyService.saveParty($scope.newParty);
 		};
 
 		// Function to remove party from firebase
 		$scope.removeParty = function(party){
-			$scope.parties.$remove(party);
+			partyService.removeParty(party);
 		};
 
 		// Function to send text message to customer
 		$scope.sendTextMessage = function(party){
-			var messageRef = new Firebase('https://scorching-inferno-9387.firebaseio.com/textMessages');
+			var messageRef = new Firebase(FIREBASE_URL + 'textMessages');
 
 			var textMessages = $firebaseArray(messageRef);
 			var newTextMessage = {

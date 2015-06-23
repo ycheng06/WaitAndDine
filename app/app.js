@@ -7,6 +7,7 @@ angular.module('myApp', [
   'myApp.waitlist',
   'myApp.authenticate',
   'myApp.version',
+  'myApp.services',
   'firebase'
 ]).
 config(['$routeProvider', function($routeProvider) {

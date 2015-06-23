@@ -43,8 +43,8 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Login</a></li>
-            <li><a ng-click="logout()" href="#">Logout</a></li>
+            <li><a href="#/login" ng-hide="currentUser">Login</a></li>
+            <li><a ng-click="logout()" href="" ng-show="currentUser">Logout</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -70,6 +70,7 @@
   <script src="landing_page/landing_page.js"></script>
   <script src="waitlist/waitlist.js"></script>
   <script src="authenticate/authenticate.js"></script>
+  <script src="services.js"></script>
 
   <script src="components/version/version.js"></script>
   <script src="components/version/version-directive.js"></script>

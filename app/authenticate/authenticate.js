@@ -14,34 +14,23 @@ angular.module('myApp.authenticate', ['ngRoute'])
   });
 }])
 
-.controller('AuthController', ['$scope', '$firebaseAuth',
-  function($scope, $firebaseAuth){
-    var authRef = new Firebase('https://scorching-inferno-9387.firebaseio.com/');
-    var auth = $firebaseAuth(authRef);
+.controller('AuthController', ['$scope', 'authService',
+  function($scope, authService){
 
     $scope.user = {email: '', password: ''};
 
     // Function to create new user
     $scope.register = function(){
-      auth.$createUser($scope.user)
-      .then(function(userData){
-        console.log("User " + userData.uid + " created successfully")
-      });
+      authService.register($scope.user);
     };
 
     // Function to login user
     $scope.login = function(){
-      auth.$authWithPassword($scope.user)
-      .then(function(authData){
-        console.log("Logged in as: " + authData.uid);
-      })
-      .catch(function(error){
-        console.error("Authentication error: " + error);
-      });
+      authService.login($scope.user);
     };
 
     // Function to logout
     $scope.logout = function(){
-      auth.$unauth();
+      authService.logout();
     };
 }]); 
