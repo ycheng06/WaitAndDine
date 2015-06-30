@@ -2,34 +2,94 @@
 
 angular.module('myApp.services', [])
 	.value('FIREBASE_URL', 'https://scorching-inferno-9387.firebaseio.com/')
-	// Service that takes care of adding and removing party to FireBase
-	.factory('partyService', function($firebaseArray, FIREBASE_URL){
-		var partiesRef = new Firebase(FIREBASE_URL + 'parties');
 
-		var parties = $firebaseArray(partiesRef);
+	// Service to simplify the Firebase connection used in many places
+	.factory('dataService', function($firebaseArray, FIREBASE_URL){
+
+		var dataServiceObject = {
+			getPartyArray: function(userId){
+				var ref = new Firebase(FIREBASE_URL).child('users').child(userId).child('parties');
+				return $firebaseArray(ref);
+			},
+			getMessageArray: function(){
+				var ref = new Firebase(FIREBASE_URL).child('textMessages');
+				return $firebaseArray(ref);
+			},
+			getEmailArray: function(){
+				var ref = new Firebase(FIREBASE_URL).child('emails');
+				return $firebaseArray(ref);
+			}
+		}
+
+		return dataServiceObject;
+	})
+
+	// Service that takes care of adding and removing party to FireBase
+	.factory('partyService', function(dataService){
 
 		var partyServiceObject = {
-			parties: parties,
-			saveParty: function(party){
-				parties.$add(party);
+			getParties: function(userId){
+				// /users/<userid>/parties
+				var userParties = dataService.getPartyArray(userId);
+
+				return userParties;
 			},
-			removeParty: function(party){
-				parties.$remove(party);
+			saveParty: function(party, userId){
+				var userParties = dataService.getPartyArray(userId);
+				userParties.$add(party);
+			},
+			removeParty: function(party, userId){
+				var userParties = dataService.getPartyArray(userId);
+				userParties.$remove(party);
 			}
 		};
 
 		return partyServiceObject;
 	})	
+
+	// Service to send text message to ready party
+	.factory('textMessageService', function(dataService, partyService){
+		var textMessageServiceObject = {
+			sendTextMessage: function(party, userId){
+				var textMessages = dataService.getMessageArray();
+
+				var newTextMessage = {
+					phoneNumber: party.phone,
+					size: party.size,
+					name: party.name
+				};
+				textMessages.$add(newTextMessage);
+
+				// Firebase array are loaded asychronously, so need to use a promise
+				// to wait until the data is loaded to make changes
+				var parties = partyService.getParties(userId);
+				parties.$loaded()
+				.then(function(x){
+					var oldParty = parties.$getRecord(party.$id);
+					console.log(oldParty);
+					oldParty.notified = "Yes";
+					parties.$save(oldParty);
+				});
+			}
+		}
+
+		return textMessageServiceObject;
+	})
+	
 	// Service that handles register, login, and logout
-	.factory('authService', function($firebaseAuth, $location, FIREBASE_URL, $rootScope){
+	.factory('authService', function($firebaseAuth, $location, FIREBASE_URL, $rootScope, dataService){
 	    var authRef = new Firebase(FIREBASE_URL);
 	    var auth = $firebaseAuth(authRef);
+	    var emails = dataService.getEmailArray();
 
 	    var authServiceObject = {
 	    	register: function(user){
 	    		//create user
 	    		auth.$createUser(user)
 	    		.then(function(userDate){
+	    			// Send registered email to user
+	    			emails.$add({email: user.email});
+
 	    			//if no problem then login 
 	    			authServiceObject.login(user);
 	    		});

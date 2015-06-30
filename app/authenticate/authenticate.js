@@ -24,7 +24,7 @@ angular.module('myApp.authenticate', ['ngRoute'])
       authService.register($scope.user);
     };
 
-    // Function to login user
+    // Function to login use  r
     $scope.login = function(){
       authService.login($scope.user);
     };

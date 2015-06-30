@@ -9,14 +9,14 @@ angular.module('myApp.waitlist', ['ngRoute'])
   });
 }])
 
-.controller('WaitlistController', ['$scope', 'partyService',
-	function($scope, partyService) {
-		$scope.parties = partyService.parties;
+.controller('WaitlistController', ['$scope', 'partyService', 'dataService', 'textMessageService',
+	function($scope, partyService, dataService, textMessageService) {
+		$scope.parties = partyService.getParties($scope.currentUser.uid);
 		$scope.newParty = {name: '', phone: '', size: '', done: false, notified: "No"};
 
 		// Function to save party to firebase
 		$scope.saveParty = function(){
-			partyService.saveParty($scope.newParty);
+			partyService.saveParty($scope.newParty, $scope.currentUser.uid);
 		};
 
 		// Function to remove party from firebase
@@ -26,17 +26,6 @@ angular.module('myApp.waitlist', ['ngRoute'])
 
 		// Function to send text message to customer
 		$scope.sendTextMessage = function(party){
-			var messageRef = new Firebase(FIREBASE_URL + 'textMessages');
-
-			var textMessages = $firebaseArray(messageRef);
-			var newTextMessage = {
-				phoneNumber: party.phone,
-				size: party.size,
-				name: party.name
-			};
-			textMessages.$add(newTextMessage);
-
-			party.notified = "Yes";
-			$scope.parties.$save(party);
+			textMessageService.sendTextMessage(party, $scope.currentUser.uid);
 		};
 }]);
