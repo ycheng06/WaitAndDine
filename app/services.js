@@ -40,7 +40,12 @@ angular.module('myApp.services', [])
 			},
 			removeParty: function(party, userId){
 				var userParties = dataService.getPartyArray(userId);
-				userParties.$remove(party);
+				
+				userParties.$loaded()
+				.then(function(parties){
+					var removeParty = userParties.$getRecord(party.$id);
+					userParties.$remove(removeParty);
+				});
 			}
 		};
 
@@ -66,7 +71,6 @@ angular.module('myApp.services', [])
 				parties.$loaded()
 				.then(function(x){
 					var oldParty = parties.$getRecord(party.$id);
-					console.log(oldParty);
 					oldParty.notified = "Yes";
 					parties.$save(oldParty);
 				});
@@ -80,24 +84,30 @@ angular.module('myApp.services', [])
 	.factory('authService', function($firebaseAuth, $location, FIREBASE_URL, $rootScope, dataService){
 	    var authRef = new Firebase(FIREBASE_URL);
 	    var auth = $firebaseAuth(authRef);
-	    var emails = dataService.getEmailArray();
 
 	    var authServiceObject = {
 	    	register: function(user){
 	    		//create user
 	    		auth.$createUser(user)
 	    		.then(function(userDate){
-	    			// Send registered email to user
-	    			emails.$add({email: user.email});
 
 	    			//if no problem then login 
-	    			authServiceObject.login(user);
+	    			authServiceObject.login(user, function(){
+					    var emails = dataService.getEmailArray();
+		    			// Send registered email to user
+		    			emails.$add({email: user.email});
+	    			});
 	    		});
 	    	},
-	    	login: function(user){
+	    	login: function(user, optionalCallback){
 	    		auth.$authWithPassword(user)
       			.then(function(authData){
 			        console.log("Logged in as: " + authData.uid);
+
+			        if(optionalCallback){
+				        optionalCallback();
+			        }
+
 			        $location.path('/waitlist');
 			     })
 		    	.catch(function(error){

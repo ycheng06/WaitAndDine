@@ -21,7 +21,7 @@ angular.module('myApp.waitlist', ['ngRoute'])
 
 		// Function to remove party from firebase
 		$scope.removeParty = function(party){
-			partyService.removeParty(party);
+			partyService.removeParty(party, $scope.currentUser.uid);
 		};
 
 		// Function to send text message to customer
